@@ -1,0 +1,45 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList } from 'react-native';
+import RNFetchBlob from 'react-native-fetch-blob';
+
+function GoodNewsApp() {
+  const [newsData, setNewsData] = useState([]);
+
+  useEffect(() => {
+    fetchGoodNews();
+  }, []);
+
+  const fetchGoodNews = async () => {
+    const apiKey = 'YOUR_API_KEY';
+    const apiUrl = `https://gnews.io/api/v4/top-headlines?lang=en&topic=good-news&token=${apiKey}`;
+
+    try {
+      const response = await RNFetchBlob.fetch('GET', apiUrl);
+      const data = response.json();
+      setNewsData(data.articles);
+    } catch (error) {
+      console.log('Error fetching news:', error);
+    }
+  };
+
+  const renderNewsItem = ({ item }) => (
+    <View>
+      <Text>{item.title}</Text>
+      <Text>{item.description}</Text>
+      <Text>{item.url}</Text>
+    </View>
+  );
+
+  return (
+    <View>
+      <Text>Good News App</Text>
+      <FlatList
+        data={newsData}
+        renderItem={renderNewsItem}
+        keyExtractor={(item) => item.url}
+      />
+    </View>
+  );
+}
+
+export default GoodNewsApp;
